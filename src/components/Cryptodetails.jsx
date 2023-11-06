@@ -4,7 +4,8 @@ import { useParams } from 'react-router-dom/cjs/react-router-dom.min';
 import millify from 'millify';
 import { Col, Row, Typography, Select } from 'antd';
 import { MoneyCollectOutlined, DollarCircleOutlined, FundOutlined, ExclamationCircleOutlined, StopOutlined, TrophyOutlined, CheckOutlined, NumberOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { useGetCryptoDetailsQuery } from '../services/cryptoApi';
+import { useGetCryptoDetailsQuery, useGetCryptoHistoryQuery } from '../services/cryptoApi';
+import LineChart from './LineChart';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -14,6 +15,7 @@ const Cryptodetails = () => {
   const { coinId } = useParams();
   const [timePeriod, setTimePeriod] = useState('7d');
   const { data, isFetching } = useGetCryptoDetailsQuery(coinId);
+  const { data: coinHistory } = useGetCryptoDetailsQuery(coinId, timePeriod);
   const  cryptoDetails = data?.data?.coin;
 
   const time = ['3h', '24h', '7d', '30d', '1y', '3m', '3y', '5y'];
@@ -34,6 +36,8 @@ const Cryptodetails = () => {
     { title: 'Circulating Supply', value: `$ ${cryptoDetails?.supply?.circulating && millify(cryptoDetails?.supply?.circulating)}`, icon: <ExclamationCircleOutlined /> },
   ];
 
+  if(isFetching) return 'Loading...'
+
   return (
     <Col className="coin-details-container">
       <Col className="coin-heading-container">
@@ -51,6 +55,7 @@ const Cryptodetails = () => {
           >
           {time.map((date) => <Option key={date}>{date}</Option>)}
         </Select>
+        <LineChart coinHistory={coinHistory} currentPrice={millify(cryptoDetails.price)} coinName={cryptoDetails.name} />
         <Col className="stats-container">
           <Col className="coin-value-statistics">
             <Col className="coin-value-statistics-heading">
@@ -101,7 +106,7 @@ const Cryptodetails = () => {
             {cryptoDetails.links.map((link) => (
               <Row className="coin-link" key={link.name}>
                 <Title level={5} className="link-name">{link.type}</Title>
-                <a href={link.url} target="_blank" rel="norefferer">{link.name}</a>
+                <a href={link.url} target="_blank" rel="noreferrer">{link.name}</a>
               </Row>
             ))}
           </Col>
