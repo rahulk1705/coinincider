@@ -352,6 +352,10 @@ width: 70%;
 .exchange-image{
     margin: 0px 10px !important;
 }
+.exchange-desc{
+    color: #fff;
+    background-color: #001529;
+}
 .search-crypto{
     margin: 20px auto 30px auto;
     width: 250px;
